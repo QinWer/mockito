@@ -5,9 +5,10 @@
 package org.mockito.internal.creation.bytebuddy;
 
 import net.bytebuddy.dynamic.loading.ClassLoadingStrategy;
+import org.mockito.mock.SerializableMode;
 
 public interface SubclassLoader {
 
-    ClassLoadingStrategy<ClassLoader> getStrategy(Class<?> mockedType);
+    ClassLoadingStrategy<ClassLoader> resolveStrategy(Class<?> mockedType, SerializableMode serializableMode, boolean canWrap);
 
 }

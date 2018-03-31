@@ -38,6 +38,8 @@ import static org.mockito.internal.util.StringUtil.join;
 
 class SubclassBytecodeGenerator implements BytecodeGenerator {
 
+    static final String CODEGEN_PREFIX = "codegen";
+
     private final SubclassLoader loader;
 
     private final ByteBuddy byteBuddy;
@@ -118,7 +120,9 @@ class SubclassBytecodeGenerator implements BytecodeGenerator {
                 .or(hasParameters(whereAny(hasType(isPackagePrivate())))));
         }
         return builder.make()
-                      .load(classLoader, loader.getStrategy(features.mockedType))
+                      .load(classLoader, loader.resolveStrategy(features.mockedType,
+                          features.serializableMode,
+                          classLoader == null || classLoader != features.mockedType.getClassLoader()))
                       .getLoaded();
     }
 
@@ -132,7 +136,7 @@ class SubclassBytecodeGenerator implements BytecodeGenerator {
         if (isComingFromJDK(type)
                 || isComingFromSignedJar(type)
                 || isComingFromSealedPackage(type)) {
-            typeName = "codegen." + typeName;
+            typeName = CODEGEN_PREFIX + "." + typeName;
         }
         return String.format("%s$%s$%d", typeName, "MockitoMock", Math.abs(random.nextInt()));
     }

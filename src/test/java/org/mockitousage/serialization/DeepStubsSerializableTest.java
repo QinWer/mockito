@@ -4,6 +4,7 @@
  */
 package org.mockitousage.serialization;
 
+import net.bytebuddy.ClassFileVersion;
 import org.junit.Test;
 
 import java.io.Serializable;
@@ -11,6 +12,7 @@ import java.util.Iterator;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.Assume.assumeTrue;
 import static org.mockito.Mockito.*;
 import static org.mockitoutil.SimpleSerializationUtil.serializeAndBack;
 
@@ -33,6 +35,8 @@ public class DeepStubsSerializableTest {
 
     @Test
     public void should_serialize_and_deserialize_parameterized_class_mocked_with_deep_stubs() throws Exception {
+        assumeTrue(ClassFileVersion.ofThisVm().isLessThan(ClassFileVersion.JAVA_V9));
+
         // given
         ListContainer deep_stubbed = mock(ListContainer.class, withSettings().defaultAnswer(RETURNS_DEEP_STUBS).serializable());
         when(deep_stubbed.iterator().next().add("yes")).thenReturn(true);
@@ -47,6 +51,8 @@ public class DeepStubsSerializableTest {
 
     @Test(expected = ClassCastException.class)
     public void should_discard_generics_metadata_when_serialized_then_disabling_deep_stubs_with_generics() throws Exception {
+        assumeTrue(ClassFileVersion.ofThisVm().isLessThan(ClassFileVersion.JAVA_V9));
+
         // given
         ListContainer deep_stubbed = mock(ListContainer.class, withSettings().defaultAnswer(RETURNS_DEEP_STUBS).serializable());
         when(deep_stubbed.iterator().hasNext()).thenReturn(true);
